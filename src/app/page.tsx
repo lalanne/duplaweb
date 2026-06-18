@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 
 // NOTE: The services below are PLACEHOLDERS based on the employability + tech
 // direction. Replace the titles/descriptions with Dupla Consulting's real
@@ -49,16 +50,25 @@ export default function Home() {
           priority
           className="h-24 w-auto sm:h-28"
         />
-        <nav className="hidden gap-8 text-sm font-medium sm:flex">
-          <a href="#servicios" className="hover:text-[#1E63E9]">
+        <nav className="flex items-center gap-4 text-sm font-medium sm:gap-8">
+          <a href="#servicios" className="hidden hover:text-[#1E63E9] sm:inline">
             Servicios
           </a>
-          <a href="#nosotros" className="hover:text-[#1E63E9]">
+          <a href="#nosotros" className="hidden hover:text-[#1E63E9] sm:inline">
             Nosotros
           </a>
-          <a href="#contacto" className="hover:text-[#1E63E9]">
+          <a href="#contacto" className="hidden hover:text-[#1E63E9] sm:inline">
             Contacto
           </a>
+          <Link href="/ingresar" className="hover:text-[#1E63E9]">
+            Ingresar
+          </Link>
+          <Link
+            href="/registro"
+            className="rounded-full bg-[#1E63E9] px-4 py-2 font-semibold text-white transition-colors hover:bg-[#1a55c7]"
+          >
+            Crear cuenta
+          </Link>
         </nav>
       </header>
 
