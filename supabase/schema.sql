@@ -73,3 +73,28 @@ create policy "Users can view their own results"
 create policy "Users can insert their own results"
   on public.test_results for insert
   with check (auth.uid() = user_id);
+
+-- 6. Let companies browse candidates and their results.
+-- Helper reads the caller's role with definer rights to avoid RLS recursion.
+create or replace function public.current_user_role()
+returns public.user_role
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select role from public.profiles where id = auth.uid();
+$$;
+
+create policy "Companies can view candidate profiles"
+  on public.profiles for select
+  using (role = 'candidate' and public.current_user_role() = 'company');
+
+create policy "Companies can view candidate results"
+  on public.test_results for select
+  using (public.current_user_role() = 'company');
+
+-- Foreign key so PostgREST can embed the candidate's profile into result queries.
+alter table public.test_results
+  add constraint test_results_user_id_profiles_fkey
+  foreign key (user_id) references public.profiles(id) on delete cascade;
