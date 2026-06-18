@@ -132,8 +132,13 @@ export default async function ProcesoDetailPage({
   const currentIndex = stageIndex(proc.stage);
   const backHref = isAdmin ? "/panel/admin/procesos" : "/panel/procesos";
 
-  // Clickable candidate chips for the timeline.
-  const chips = (list: ProcessCandidate[]) =>
+  // Everyone who was evaluated stays in the evaluation stage, so the company
+  // sees the full shortlist and which of them advanced to "Presentado".
+  const evaluados = [...enEvaluacion, ...presentados];
+
+  // Clickable candidate chips for the timeline. When `markPresented` is set,
+  // candidates already presented get a tag so the narrowing is clear.
+  const chips = (list: ProcessCandidate[], markPresented = false) =>
     list.length === 0 ? (
       <p className="mt-2 text-xs text-slate-400">Sin candidatos por ahora.</p>
     ) : (
@@ -149,6 +154,11 @@ export default async function ProcesoDetailPage({
                 {prof?.display_name ?? "Candidato"}
                 {prof?.headline ? (
                   <span className="text-xs text-slate-400">· {prof.headline}</span>
+                ) : null}
+                {markPresented && pc.status === "presentado" ? (
+                  <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+                    Presentado
+                  </span>
                 ) : null}
               </Link>
             </li>
@@ -234,9 +244,12 @@ export default async function ProcesoDetailPage({
                   {stage.key === "evaluacion" && (
                     <div className="mt-3">
                       <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-                        En evaluación
+                        Candidatos evaluados
+                        {evaluados.length > 0
+                          ? ` (${presentados.length} de ${evaluados.length} presentados)`
+                          : ""}
                       </p>
-                      {chips(enEvaluacion)}
+                      {chips(evaluados, true)}
                     </div>
                   )}
                   {stage.key === "presentacion" && (
