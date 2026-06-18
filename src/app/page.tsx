@@ -44,10 +44,10 @@ export default function Home() {
         <Image
           src="/logo.png"
           alt="Dupla Consulting"
-          width={652}
-          height={767}
+          width={1214}
+          height={1366}
           priority
-          className="h-14 w-auto"
+          className="h-24 w-auto sm:h-28"
         />
         <nav className="hidden gap-8 text-sm font-medium sm:flex">
           <a href="#servicios" className="hover:text-[#1E63E9]">
