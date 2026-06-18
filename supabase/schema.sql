@@ -9,6 +9,7 @@ create table public.profiles (
   id           uuid primary key references auth.users on delete cascade,
   role         public.user_role not null,
   display_name text,
+  email        text,
   created_at   timestamptz not null default now()
 );
 
@@ -36,11 +37,17 @@ security definer
 set search_path = public
 as $$
 begin
-  insert into public.profiles (id, role, display_name)
+  insert into public.profiles (id, role, display_name, email)
   values (
     new.id,
     coalesce((new.raw_user_meta_data ->> 'role')::public.user_role, 'candidate'),
-    new.raw_user_meta_data ->> 'display_name'
+    coalesce(
+      new.raw_user_meta_data ->> 'display_name',
+      new.raw_user_meta_data ->> 'full_name',
+      new.raw_user_meta_data ->> 'name',
+      new.email
+    ),
+    new.email
   );
   return new;
 end;
