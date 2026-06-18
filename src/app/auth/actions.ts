@@ -46,7 +46,14 @@ export async function signup(
   });
 
   if (error) {
-    return { error: error.message };
+    // GoTrue surfaces database/trigger failures as an opaque 500 (often "{}").
+    const msg = error.message?.trim();
+    return {
+      error:
+        !msg || msg === "{}"
+          ? "No se pudo crear la cuenta. Inténtalo más tarde."
+          : msg,
+    };
   }
 
   // If email confirmation is disabled, a session is created and we go straight in.
