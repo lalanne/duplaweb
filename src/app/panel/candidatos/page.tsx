@@ -186,7 +186,7 @@ export default async function CandidatosPage() {
                         rel="noopener noreferrer"
                         className="text-sm font-medium text-[#1E63E9] hover:underline"
                       >
-                        LinkedIn / portafolio ↗
+                        Ver perfil de LinkedIn ↗
                       </a>
                     )}
                     {p?.cv_path && cvUrlByPath.has(p.cv_path) && (

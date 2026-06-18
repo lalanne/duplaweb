@@ -166,11 +166,11 @@ export function PerfilForm({
                   placeholder="Analista de Marketing"
                 />
                 <Field
-                  label="LinkedIn / portafolio"
+                  label="Perfil de LinkedIn"
                   name="linkedin_url"
                   type="url"
                   defaultValue={profile.linkedin_url ?? ""}
-                  placeholder="https://linkedin.com/in/…"
+                  placeholder="https://linkedin.com/in/tu-perfil"
                 />
               </div>
             </div>
