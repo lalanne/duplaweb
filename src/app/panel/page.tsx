@@ -82,7 +82,21 @@ export default async function PanelPage() {
             </Link>
           </div>
         ) : (
-          <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-6">
+          <div className="mt-10 grid gap-5">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6">
+            <h2 className="text-lg font-semibold">Mi perfil</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Completa tus datos de contacto, experiencia y sube tu CV. Las
+              empresas verán esta información junto a tus resultados.
+            </p>
+            <Link
+              href="/panel/perfil"
+              className="mt-4 inline-block rounded-full bg-[#1E63E9] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1a55c7]"
+            >
+              Editar mi perfil
+            </Link>
+          </div>
+          <div className="rounded-2xl border border-slate-200 bg-white p-6">
             <h2 className="text-lg font-semibold">
               Evaluación de Personalidad (Big Five)
             </h2>
@@ -107,6 +121,7 @@ export default async function PanelPage() {
                 </Link>
               )}
             </div>
+          </div>
           </div>
         )}
       </main>

@@ -105,3 +105,36 @@ create policy "Companies can view candidate results"
 alter table public.test_results
   add constraint test_results_user_id_profiles_fkey
   foreign key (user_id) references public.profiles(id) on delete cascade;
+
+-- 7. Richer candidate profile: contact details + professional info that
+--    companies can read to decide if they're interested in a candidate.
+--    Existing RLS already lets the owner update and companies select these.
+alter table public.profiles
+  add column if not exists phone            text,
+  add column if not exists contact_email    text,
+  add column if not exists birth_date       date,
+  add column if not exists location         text,  -- comuna / región
+  add column if not exists headline         text,  -- e.g. "Ingeniero Comercial"
+  add column if not exists summary          text,  -- "sobre mí"
+  add column if not exists linkedin_url     text,
+  add column if not exists years_experience smallint,
+  add column if not exists education_level  text,
+  add column if not exists desired_role     text,
+  add column if not exists cv_path          text;  -- object path inside the `cvs` bucket
+
+-- 8. Private storage bucket for CVs. Each candidate keeps a single file at
+--    cvs/<user_id>/cv.<ext>; companies read it through short-lived signed URLs.
+insert into storage.buckets (id, name, public)
+values ('cvs', 'cvs', false)
+on conflict (id) do nothing;
+
+-- Candidates manage only files inside their own user-id folder.
+create policy "Candidates manage own CV"
+  on storage.objects for all
+  using (bucket_id = 'cvs' and (storage.foldername(name))[1] = auth.uid()::text)
+  with check (bucket_id = 'cvs' and (storage.foldername(name))[1] = auth.uid()::text);
+
+-- Companies can read any CV (needed to mint signed URLs server-side).
+create policy "Companies can read CVs"
+  on storage.objects for select
+  using (bucket_id = 'cvs' and public.current_user_role() = 'company');
