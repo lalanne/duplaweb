@@ -232,3 +232,64 @@ create policy "Companies read matched CVs"
     and public.current_user_role() = 'company'
     and public.is_candidate_visible(((storage.foldername(name))[1])::uuid)
   );
+
+-- 12. Recruitment processes ("Procesos"): a search an admin runs for a company.
+--     Admins create/update/delete; the owning company can read its own.
+create table if not exists public.processes (
+  id          uuid primary key default gen_random_uuid(),
+  company_id  uuid not null references public.profiles(id) on delete cascade,
+  name        text not null,
+  role_name   text not null,
+  description text,
+  stage       text not null default 'solicitud_recibida',
+  created_by  uuid references public.profiles(id),
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+
+alter table public.processes enable row level security;
+
+create policy "Admins manage processes"
+  on public.processes for all
+  using (public.current_user_role()::text = 'admin')
+  with check (public.current_user_role()::text = 'admin');
+
+create policy "Companies read their processes"
+  on public.processes for select
+  using (company_id = auth.uid());
+
+-- 13. Process events: each stage change is logged so the company sees a
+--     package-tracking-style timeline with timestamps.
+create table if not exists public.process_events (
+  id         uuid primary key default gen_random_uuid(),
+  process_id uuid not null references public.processes(id) on delete cascade,
+  stage      text not null,
+  note       text,
+  created_by uuid references public.profiles(id),
+  created_at timestamptz not null default now()
+);
+
+alter table public.process_events enable row level security;
+
+-- Security-definer helper keeps the processes lookup out of the caller's scope.
+create or replace function public.owns_process(pid uuid)
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1 from public.processes p
+    where p.id = pid and p.company_id = auth.uid()
+  );
+$$;
+
+create policy "Admins manage process events"
+  on public.process_events for all
+  using (public.current_user_role()::text = 'admin')
+  with check (public.current_user_role()::text = 'admin');
+
+create policy "Companies read their process events"
+  on public.process_events for select
+  using (public.owns_process(process_id));
