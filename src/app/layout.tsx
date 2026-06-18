@@ -13,9 +13,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Dupla Consulting — Sitio en construcción",
+  title: "Dupla Consulting — Evaluación de empleabilidad y tecnología",
   description:
-    "Dupla Consulting. Nuestro sitio web está en construcción. Pronto estaremos en línea.",
+    "Dupla Consulting combina la evaluación de empleabilidad con soluciones tecnológicas para impulsar el talento de personas y organizaciones.",
+  // Keep noindex while service content is still placeholder. Remove this line
+  // (or set index: true) once the copy is final and you want Google to index it.
   robots: { index: false, follow: false },
 };
 
