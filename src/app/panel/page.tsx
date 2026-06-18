@@ -22,10 +22,12 @@ export default async function PanelPage() {
     .single();
 
   const isCompany = profile?.role === "company";
+  const isAdmin = profile?.role === "admin";
+  const isCandidate = !isCompany && !isAdmin;
   const name = profile?.display_name ?? user.email;
 
   let hasResult = false;
-  if (!isCompany) {
+  if (isCandidate) {
     const { count } = await supabase
       .from("test_results")
       .select("id", { count: "exact", head: true })
@@ -58,21 +60,37 @@ export default async function PanelPage() {
 
       <main className="mx-auto w-full max-w-6xl px-6 py-12">
         <span className="inline-block rounded-full bg-[#1E63E9]/10 px-3 py-1 text-xs font-semibold text-[#1E63E9]">
-          {isCompany ? "Empresa" : "Candidato"}
+          {isAdmin ? "Administrador" : isCompany ? "Empresa" : "Candidato"}
         </span>
         <h1 className="mt-4 text-3xl font-bold">Hola, {name} 👋</h1>
         <p className="mt-2 max-w-2xl text-slate-600">
-          {isCompany
-            ? "Desde aquí podrás publicar oportunidades y revisar candidatos evaluados. Estamos preparando estas funciones."
-            : "Desde aquí podrás completar tus evaluaciones de empleabilidad y postular a oportunidades. Estamos preparando estas funciones."}
+          {isAdmin
+            ? "Gestiona candidatos y empresas, y decide qué candidatos hacer visibles para cada empresa."
+            : isCompany
+              ? "Desde aquí podrás revisar los candidatos que el equipo de Dupla te asigne. Estamos preparando más funciones."
+              : "Desde aquí podrás completar tus evaluaciones de empleabilidad y postular a oportunidades. Estamos preparando estas funciones."}
         </p>
 
-        {isCompany ? (
+        {isAdmin ? (
           <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-6">
-            <h2 className="text-lg font-semibold">Candidatos evaluados</h2>
+            <h2 className="text-lg font-semibold">Matchmaking</h2>
             <p className="mt-1 text-sm text-slate-600">
-              Revisa los candidatos que han completado su evaluación de
-              personalidad (Big Five) y compara sus resultados.
+              Revisa todos los candidatos y empresas, y asigna candidatos a las
+              empresas para hacerlos visibles.
+            </p>
+            <Link
+              href="/panel/admin"
+              className="mt-4 inline-block rounded-full bg-[#1E63E9] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1a55c7]"
+            >
+              Abrir matchmaking
+            </Link>
+          </div>
+        ) : isCompany ? (
+          <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-6">
+            <h2 className="text-lg font-semibold">Candidatos asignados</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Revisa los candidatos que el equipo de Dupla ha asignado a tu
+              empresa y compara sus resultados.
             </p>
             <Link
               href="/panel/candidatos"

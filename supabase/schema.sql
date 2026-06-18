@@ -138,3 +138,97 @@ create policy "Candidates manage own CV"
 create policy "Companies can read CVs"
   on storage.objects for select
   using (bucket_id = 'cvs' and public.current_user_role() = 'company');
+
+-- 9. Admin role: Dupla Consulting matchmakers. They see every candidate and
+--    every company and decide which candidates become visible to which company.
+--    NB: comparisons below use ::text so this whole file can run in one go
+--    (a freshly-added enum value can't be referenced as a literal in the same
+--    transaction).
+alter type public.user_role add value if not exists 'admin';
+
+-- 10. Matches: an admin makes a candidate visible to a specific company.
+create table if not exists public.matches (
+  id           uuid primary key default gen_random_uuid(),
+  candidate_id uuid not null references public.profiles(id) on delete cascade,
+  company_id   uuid not null references public.profiles(id) on delete cascade,
+  created_by   uuid references public.profiles(id),
+  created_at   timestamptz not null default now(),
+  unique (candidate_id, company_id)
+);
+
+alter table public.matches enable row level security;
+
+-- Security-definer helper: is the calling company matched to this candidate?
+-- Definer rights keep the matches lookup out of the caller's RLS scope.
+create or replace function public.is_candidate_visible(candidate uuid)
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1 from public.matches m
+    where m.candidate_id = candidate and m.company_id = auth.uid()
+  );
+$$;
+
+-- 11. Re-scope visibility now that matches gate company access.
+
+-- Admins see everything.
+create policy "Admins can view all profiles"
+  on public.profiles for select
+  using (public.current_user_role()::text = 'admin');
+
+create policy "Admins can view all results"
+  on public.test_results for select
+  using (public.current_user_role()::text = 'admin');
+
+-- Companies no longer see every candidate — only the ones matched to them.
+drop policy if exists "Companies can view candidate profiles" on public.profiles;
+drop policy if exists "Companies can view candidate results" on public.test_results;
+
+create policy "Companies see matched candidates"
+  on public.profiles for select
+  using (
+    role = 'candidate'
+    and public.current_user_role() = 'company'
+    and public.is_candidate_visible(id)
+  );
+
+create policy "Companies see matched results"
+  on public.test_results for select
+  using (
+    public.current_user_role() = 'company'
+    and public.is_candidate_visible(user_id)
+  );
+
+-- Matches: admins manage; the matched company and candidate can read theirs.
+create policy "Admins manage matches"
+  on public.matches for all
+  using (public.current_user_role()::text = 'admin')
+  with check (public.current_user_role()::text = 'admin');
+
+create policy "Companies read their matches"
+  on public.matches for select
+  using (company_id = auth.uid());
+
+create policy "Candidates read their matches"
+  on public.matches for select
+  using (candidate_id = auth.uid());
+
+-- CV access follows the same rules: admins read all; companies read only the
+-- CVs of candidates matched to them (path is cvs/<candidate_id>/cv.<ext>).
+drop policy if exists "Companies can read CVs" on storage.objects;
+
+create policy "Admins read CVs"
+  on storage.objects for select
+  using (bucket_id = 'cvs' and public.current_user_role()::text = 'admin');
+
+create policy "Companies read matched CVs"
+  on storage.objects for select
+  using (
+    bucket_id = 'cvs'
+    and public.current_user_role() = 'company'
+    and public.is_candidate_visible(((storage.foldername(name))[1])::uuid)
+  );

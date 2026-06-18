@@ -7,7 +7,7 @@ import { signup, type AuthState } from "../auth/actions";
 import { createClient } from "@/lib/supabase/client";
 import { GoogleButton } from "../auth/google-button";
 
-type Role = "candidate" | "company";
+type Role = "candidate" | "company" | "admin";
 
 export default function RegistroPage() {
   const [role, setRole] = useState<Role>("candidate");
@@ -47,28 +47,39 @@ export default function RegistroPage() {
           </p>
 
           {/* Role toggle */}
-          <div className="mt-6 grid grid-cols-2 gap-2 rounded-xl bg-slate-100 p-1">
+          <div className="mt-6 grid grid-cols-3 gap-2 rounded-xl bg-slate-100 p-1">
             <button
               type="button"
               onClick={() => setRole("candidate")}
-              className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+              className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
                 role === "candidate"
                   ? "bg-white text-[#1E63E9] shadow-sm"
                   : "text-slate-500 hover:text-[#16235C]"
               }`}
             >
-              Soy candidato
+              Candidato
             </button>
             <button
               type="button"
               onClick={() => setRole("company")}
-              className={`rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${
+              className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
                 role === "company"
                   ? "bg-white text-[#1E63E9] shadow-sm"
                   : "text-slate-500 hover:text-[#16235C]"
               }`}
             >
-              Soy empresa
+              Empresa
+            </button>
+            <button
+              type="button"
+              onClick={() => setRole("admin")}
+              className={`rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
+                role === "admin"
+                  ? "bg-white text-[#1E63E9] shadow-sm"
+                  : "text-slate-500 hover:text-[#16235C]"
+              }`}
+            >
+              Dupla
             </button>
           </div>
 

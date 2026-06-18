@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 
 export type AuthState = { error?: string; message?: string };
 
-const ROLES = ["candidate", "company"] as const;
+const ROLES = ["candidate", "company", "admin"] as const;
 
 export async function signup(
   _prev: AuthState,
