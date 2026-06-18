@@ -1,5 +1,9 @@
 import { displayDimensions, type FactorScores } from "@/lib/tests/mini-ipip";
 
+// Column list for selecting a full candidate profile (shared across pages).
+export const CANDIDATE_FIELDS =
+  "id, display_name, email, phone, contact_email, birth_date, location, headline, summary, linkedin_url, years_experience, education_level, desired_role, cv_path";
+
 export interface CandidateProfile {
   id: string;
   display_name: string | null;

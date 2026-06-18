@@ -74,16 +74,16 @@ export default async function PanelPage() {
         {isAdmin ? (
           <div className="mt-10 grid gap-5">
             <div className="rounded-2xl border border-slate-200 bg-white p-6">
-              <h2 className="text-lg font-semibold">Matchmaking</h2>
+              <h2 className="text-lg font-semibold">Candidatos y empresas</h2>
               <p className="mt-1 text-sm text-slate-600">
-                Revisa todos los candidatos y empresas, y asigna candidatos a
-                las empresas para hacerlos visibles.
+                Revisa el directorio de todos los candidatos y empresas
+                registradas.
               </p>
               <Link
                 href="/panel/admin"
                 className="mt-4 inline-block rounded-full bg-[#1E63E9] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1a55c7]"
               >
-                Abrir matchmaking
+                Ver directorio
               </Link>
             </div>
             <div className="rounded-2xl border border-slate-200 bg-white p-6">
@@ -101,33 +101,18 @@ export default async function PanelPage() {
             </div>
           </div>
         ) : isCompany ? (
-          <div className="mt-10 grid gap-5">
-            <div className="rounded-2xl border border-slate-200 bg-white p-6">
-              <h2 className="text-lg font-semibold">Candidatos asignados</h2>
-              <p className="mt-1 text-sm text-slate-600">
-                Revisa los candidatos que el equipo de Dupla ha asignado a tu
-                empresa y compara sus resultados.
-              </p>
-              <Link
-                href="/panel/candidatos"
-                className="mt-4 inline-block rounded-full bg-[#1E63E9] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1a55c7]"
-              >
-                Ver candidatos
-              </Link>
-            </div>
-            <div className="rounded-2xl border border-slate-200 bg-white p-6">
-              <h2 className="text-lg font-semibold">Mis procesos</h2>
-              <p className="mt-1 text-sm text-slate-600">
-                Sigue el avance de los procesos de búsqueda que Dupla gestiona
-                para tu empresa.
-              </p>
-              <Link
-                href="/panel/procesos"
-                className="mt-4 inline-block rounded-full bg-[#1E63E9] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1a55c7]"
-              >
-                Ver mis procesos
-              </Link>
-            </div>
+          <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-6">
+            <h2 className="text-lg font-semibold">Mis procesos</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Sigue el avance de los procesos de búsqueda que Dupla gestiona para
+              tu empresa y revisa los candidatos en evaluación y presentados.
+            </p>
+            <Link
+              href="/panel/procesos"
+              className="mt-4 inline-block rounded-full bg-[#1E63E9] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#1a55c7]"
+            >
+              Ver mis procesos
+            </Link>
           </div>
         ) : (
           <div className="mt-10 grid gap-5">

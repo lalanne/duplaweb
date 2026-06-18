@@ -87,3 +87,43 @@ export async function deleteProcess(formData: FormData) {
   await supabase.from("processes").delete().eq("id", id);
   revalidatePath("/panel/admin/procesos");
 }
+
+const CANDIDATE_STATUSES = ["en_evaluacion", "presentado", "descartado"];
+
+export async function attachCandidate(formData: FormData) {
+  const { supabase, user } = await requireAdmin();
+  const processId = String(formData.get("process_id") ?? "");
+  const candidateId = String(formData.get("candidate_id") ?? "");
+  if (!processId || !candidateId) return;
+
+  await supabase.from("process_candidates").upsert(
+    {
+      process_id: processId,
+      candidate_id: candidateId,
+      status: "en_evaluacion",
+      created_by: user.id,
+    },
+    { onConflict: "process_id,candidate_id", ignoreDuplicates: true },
+  );
+  revalidatePath(`/panel/procesos/${processId}`);
+}
+
+export async function setCandidateStatus(formData: FormData) {
+  const { supabase } = await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const status = String(formData.get("status") ?? "");
+  const processId = String(formData.get("process_id") ?? "");
+  if (!id || !CANDIDATE_STATUSES.includes(status)) return;
+
+  await supabase.from("process_candidates").update({ status }).eq("id", id);
+  revalidatePath(`/panel/procesos/${processId}`);
+}
+
+export async function removeProcessCandidate(formData: FormData) {
+  const { supabase } = await requireAdmin();
+  const id = String(formData.get("id") ?? "");
+  const processId = String(formData.get("process_id") ?? "");
+  if (!id) return;
+  await supabase.from("process_candidates").delete().eq("id", id);
+  revalidatePath(`/panel/procesos/${processId}`);
+}

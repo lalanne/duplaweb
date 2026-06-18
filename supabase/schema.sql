@@ -293,3 +293,54 @@ create policy "Admins manage process events"
 create policy "Companies read their process events"
   on public.process_events for select
   using (public.owns_process(process_id));
+
+-- 14. Candidates within a process. This replaces the standalone "matches" pool:
+--     a company now sees a candidate only through a process the candidate
+--     belongs to. Status: en_evaluacion → presentado (or descartado).
+create table if not exists public.process_candidates (
+  id           uuid primary key default gen_random_uuid(),
+  process_id   uuid not null references public.processes(id) on delete cascade,
+  candidate_id uuid not null references public.profiles(id) on delete cascade,
+  status       text not null default 'en_evaluacion',
+  created_by   uuid references public.profiles(id),
+  created_at   timestamptz not null default now(),
+  unique (process_id, candidate_id)
+);
+
+alter table public.process_candidates enable row level security;
+
+create policy "Admins manage process candidates"
+  on public.process_candidates for all
+  using (public.current_user_role()::text = 'admin')
+  with check (public.current_user_role()::text = 'admin');
+
+-- Companies only see candidates being evaluated or presented (not discarded).
+create policy "Companies read their process candidates"
+  on public.process_candidates for select
+  using (
+    public.owns_process(process_id)
+    and status in ('en_evaluacion', 'presentado')
+  );
+
+-- Re-point candidate visibility from "matches" to process membership. The
+-- existing company profile/results/CV policies call this helper, so swapping
+-- its body migrates them all at once.
+create or replace function public.is_candidate_visible(candidate uuid)
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1
+    from public.process_candidates pc
+    join public.processes p on p.id = pc.process_id
+    where pc.candidate_id = candidate
+      and p.company_id = auth.uid()
+      and pc.status in ('en_evaluacion', 'presentado')
+  );
+$$;
+
+-- The flat matches pool is replaced by processes (its policies drop with it).
+drop table if exists public.matches cascade;
