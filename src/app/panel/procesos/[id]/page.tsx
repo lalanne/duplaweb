@@ -67,9 +67,13 @@ export default async function ProcesoDetailPage({
     .order("created_at", { ascending: true });
   const events = (eventRows ?? []) as EventRow[];
 
-  // Latest event per stage (for timestamp + note on the timeline).
-  const eventByStage = new Map<string, EventRow>();
-  for (const e of events) eventByStage.set(e.stage, e);
+  // All events per stage, oldest first, so the full note history stays visible.
+  const eventsByStage = new Map<string, EventRow[]>();
+  for (const e of events) {
+    const list = eventsByStage.get(e.stage) ?? [];
+    list.push(e);
+    eventsByStage.set(e.stage, list);
+  }
 
   const currentIndex = stageIndex(proc.stage);
   const backHref = isAdmin ? "/panel/admin/procesos" : "/panel/procesos";
@@ -96,7 +100,7 @@ export default async function ProcesoDetailPage({
           {PROCESS_STAGES.map((stage, index) => {
             const done = index < currentIndex;
             const current = index === currentIndex;
-            const event = eventByStage.get(stage.key);
+            const stageEvents = eventsByStage.get(stage.key) ?? [];
             const isLast = index === PROCESS_STAGES.length - 1;
             return (
               <li key={stage.key} className="flex gap-4">
@@ -136,11 +140,15 @@ export default async function ProcesoDetailPage({
                     )}
                   </p>
                   <p className="text-sm text-slate-500">{stage.description}</p>
-                  {event && (
-                    <p className="mt-1 text-xs text-slate-400">
-                      {fmt(event.created_at)}
-                      {event.note ? ` · ${event.note}` : ""}
-                    </p>
+                  {stageEvents.length > 0 && (
+                    <ul className="mt-2 space-y-1">
+                      {stageEvents.map((event, i) => (
+                        <li key={i} className="text-xs text-slate-400">
+                          {fmt(event.created_at)}
+                          {event.note ? ` · ${event.note}` : ""}
+                        </li>
+                      ))}
+                    </ul>
                   )}
                 </div>
               </li>
