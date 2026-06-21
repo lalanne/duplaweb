@@ -52,11 +52,12 @@ export async function POST(request: Request) {
           controller.enqueue(encoder.encode(delta));
         }
       } catch (err) {
-        // TEMP: surface the real error to diagnose setup issues. Revert to a
-        // generic message once the chatbot is confirmed working.
         console.error("chat error:", err);
-        const detail = err instanceof Error ? err.message : String(err);
-        controller.enqueue(encoder.encode(`\n\n[Error: ${detail}]`));
+        controller.enqueue(
+          encoder.encode(
+            "\n\nLo siento, ocurrió un error. Por favor inténtalo de nuevo o escríbenos a contacto@duplaconsulting.cl.",
+          ),
+        );
       } finally {
         controller.close();
       }
