@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { ChatWidget } from "./chat-widget";
 
 // NOTE: The services below are PLACEHOLDERS based on the employability + tech
 // direction. Replace the titles/descriptions with Dupla Consulting's real
@@ -239,6 +240,8 @@ export default function Home() {
           reservados.
         </div>
       </footer>
+
+      <ChatWidget />
     </div>
   );
 }
