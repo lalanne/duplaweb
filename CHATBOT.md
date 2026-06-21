@@ -1,7 +1,13 @@
 # Chatbot plan — Dupla AI assistant
 
-A client-facing LLM chatbot for duplaconsulting.cl. Status: **plan only — not yet
-implemented.**
+A client-facing LLM chatbot for duplaconsulting.cl.
+
+Status: **Phases 1–2a built and live** — the streaming chat widget answers
+questions on the site (engine + `/api/chat` + widget). Persistence, lead
+capture/booking/hand-off, and the admin leads view are still pending.
+
+For how the built integration works, see
+[CHATBOT_ARCHITECTURE.md](./CHATBOT_ARCHITECTURE.md).
 
 ## Goal
 
