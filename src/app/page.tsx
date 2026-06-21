@@ -37,6 +37,30 @@ const services = [
   },
 ];
 
+// Charlas y cursos sobre IA, Claude y agentes — modalidad online y presencial.
+const aiTrainings = [
+  {
+    title: "Charlas introductorias de IA",
+    description:
+      "Sesiones para que tu equipo entienda qué es la IA generativa, qué puede hacer hoy y cómo aplicarla en el trabajo diario.",
+  },
+  {
+    title: "Cursos prácticos de Claude",
+    description:
+      "Aprende a sacarle el máximo a Claude y otras herramientas de IA generativa con ejercicios y casos reales.",
+  },
+  {
+    title: "Talleres de agentes (Agentic AI)",
+    description:
+      "Diseña y construye agentes que automatizan tareas y flujos de trabajo end-to-end con IA.",
+  },
+  {
+    title: "Capacitación a medida",
+    description:
+      "Programas diseñados para los procesos, herramientas y objetivos específicos de tu organización.",
+  },
+];
+
 export default function Home() {
   return (
     <div className="flex min-h-screen flex-col bg-white text-[#16235C]">
@@ -53,6 +77,9 @@ export default function Home() {
         <nav className="flex items-center gap-4 text-sm font-medium sm:gap-8">
           <a href="#servicios" className="hidden hover:text-[#1E63E9] sm:inline">
             Servicios
+          </a>
+          <a href="#charlas-ia" className="hidden hover:text-[#1E63E9] sm:inline">
+            Charlas IA
           </a>
           <a href="#nosotros" className="hidden hover:text-[#1E63E9] sm:inline">
             Nosotros
@@ -121,6 +148,53 @@ export default function Home() {
                 </p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* AI talks & courses */}
+      <section id="charlas-ia" className="bg-[#1E63E9]/5 py-20 sm:py-24">
+        <div className="mx-auto w-full max-w-6xl px-6">
+          <span className="mx-auto block w-fit rounded-full bg-[#1E63E9]/10 px-3 py-1 text-center text-xs font-semibold uppercase tracking-wide text-[#1E63E9]">
+            Nuevo
+          </span>
+          <h2 className="mt-4 text-center text-3xl font-bold tracking-tight sm:text-4xl">
+            Charlas y Cursos de IA
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-slate-600">
+            Llevamos a tu equipo al mundo de la Inteligencia Artificial: charlas
+            y cursos sobre IA generativa, Claude y agentes (Agentic AI), con un
+            enfoque práctico y aplicado.
+          </p>
+          <div className="mt-6 flex flex-wrap justify-center gap-3">
+            <span className="rounded-full border border-[#1E63E9]/30 bg-white px-4 py-1.5 text-sm font-semibold text-[#1E63E9]">
+              💻 Online
+            </span>
+            <span className="rounded-full border border-[#1E63E9]/30 bg-white px-4 py-1.5 text-sm font-semibold text-[#1E63E9]">
+              🏢 Presencial
+            </span>
+          </div>
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {aiTrainings.map((training) => (
+              <div
+                key={training.title}
+                className="rounded-2xl border border-slate-200 bg-white p-7 shadow-sm transition-shadow hover:shadow-md"
+              >
+                <div className="mb-4 h-1.5 w-10 rounded-full bg-[#1E63E9]" />
+                <h3 className="text-lg font-semibold">{training.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                  {training.description}
+                </p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-12 text-center">
+            <a
+              href="#contacto"
+              className="inline-block rounded-full bg-[#1E63E9] px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-[#1a55c7]"
+            >
+              Quiero capacitar a mi equipo
+            </a>
           </div>
         </div>
       </section>
