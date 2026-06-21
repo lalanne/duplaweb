@@ -1,8 +1,23 @@
 # Dupla Consulting — Web
 
-Website for **Dupla Consulting**. Currently serves a "Sitio en construcción" (under construction) page, with the goal of growing into a platform where clients log in and take employability tests.
+Website and platform for **Dupla Consulting**: a Spanish landing site plus an
+employability/recruitment platform (candidate profiles, tests, recruitment
+processes) and a client-facing AI chat assistant.
 
-Built with [Next.js](https://nextjs.org) (App Router, TypeScript, Tailwind CSS).
+Built with [Next.js](https://nextjs.org) (App Router, TypeScript, Tailwind CSS),
+backed by [Supabase](https://supabase.com) (Postgres + Auth + Storage) and
+deployed on [Vercel](https://vercel.com).
+
+## Documentation
+
+This README is the index. See also:
+
+- [AGENTS.md](./AGENTS.md) — instructions for AI agents / contributors working in this repo.
+- [CLAUDE.md](./CLAUDE.md) — project instructions for Claude Code (imports `AGENTS.md`).
+- [TESTING.md](./TESTING.md) — the automated-testing plan (RLS-first; Vitest + Supabase + Playwright).
+- [CHATBOT.md](./CHATBOT.md) — the AI chat assistant plan, phases, and decisions.
+- [CHATBOT_ARCHITECTURE.md](./CHATBOT_ARCHITECTURE.md) — how the chatbot connects to and uses the Claude API.
+- [`supabase/schema.sql`](./supabase/schema.sql) — the database schema (applied by hand in the Supabase dashboard).
 
 ## Getting Started
 
