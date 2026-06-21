@@ -51,10 +51,12 @@ export async function POST(request: Request) {
         for await (const delta of streamReply(messages)) {
           controller.enqueue(encoder.encode(delta));
         }
-      } catch {
-        controller.enqueue(
-          encoder.encode("\n\n[Lo siento, ocurrió un error. Intenta de nuevo.]"),
-        );
+      } catch (err) {
+        // TEMP: surface the real error to diagnose setup issues. Revert to a
+        // generic message once the chatbot is confirmed working.
+        console.error("chat error:", err);
+        const detail = err instanceof Error ? err.message : String(err);
+        controller.enqueue(encoder.encode(`\n\n[Error: ${detail}]`));
       } finally {
         controller.close();
       }
